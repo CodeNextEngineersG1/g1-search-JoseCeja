@@ -61,14 +61,51 @@ function processInput() {
   cleanedInput = searchBar.value.toLowerCase().trim();
   autoSuggestions.innerHTML = " ";
   autoSuggestions.style.display = "none";
-  
+  searchBar = " ";
+
+  let databaseRecord = getRecord(cleanedInput);
+
+  if (databaseRecord != null) {
+    displayRecord(databaseRecord);
+  } else {
+    alert("No results.");
+  }
 
 }
 
 function getRecord(cleanedInput) {
+  for (let i = 0; i <= database.lenght; i++) {
+    let cleanedRecordName = database[i].name.toLowerCase().trim();
 
+    if (cleanedInput == cleanedRecordName) {
+      return database[i];
+    }
+
+  }
+  return null;
 }
 
 function displayRecord() {
+  let recordBreed = document.creatElement("h2"),
+    recordPicture = document.creatElement("img"),
+    recordBio = document.creatElement("p"),
+    recordHealth = document.creatElement("p"),
+    recordGromming = document.creatElement("p"),
+    recordTraining = document.creatElement("p");
+
+  recordBreed.innerHTML = databaseRecord.Breed;
+  recordPicture.innerHTML = databaseRecord.Picture;
+  recordBio.innerHTML = databaseRecord.Bio;
+  recordHealth.innerHTML = databaseRecord.Health;
+  recordGrooming.innerHTML = databaseRecord.Grooming;
+  recordTraining.innerHTML = databaseRecord.Training;
+
+  display.appendChild(recordBreed);
+  display.appendChild(recordPicture);
+  display.appendChild(recordBio);
+  display.appendChild(recordHealth);
+  display.appendChild(recordGromming);
+  display.appendChild(recordGromming);
+
 
 }
