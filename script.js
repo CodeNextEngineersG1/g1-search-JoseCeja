@@ -75,7 +75,7 @@ function processInput() {
 
 function getRecord(cleanedInput) {
   for (let i = 0; i <= database.lenght; i++) {
-    let cleanedRecordName = database[i].name.toLowerCase().trim();
+    let cleanedRecordName = database[i].Breed.toLowerCase().trim();
 
     if (cleanedInput == cleanedRecordName) {
       return database[i];
