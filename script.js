@@ -4,7 +4,7 @@ let database,
   autoSuggestions,
   display;
 
-database[{
+database = [{
   Breed: "Saint Bernard",
   Picture: "img/SaintBernard.jpg",
   Bio: "Not ranked particularly high in AKC registrations, this genial giant is nonetheless among the world’s most famous and beloved breeds. The Saint’s written standard abounds with phrases like “very powerful,” “extraordinarily muscular,” “imposing,” and “massive.” A male stands a minimum 27.5 inches at the shoulder; females will be smaller and more delicately built. The huge head features a wrinkled brow, a short muzzle, and dark eyes, combining to give Saints the intelligent, friendly expression that was such a welcome sight to stranded Alpine travelers.",
@@ -46,37 +46,38 @@ searchButton = document.querySelector("#search-button");
 autoSuggestions = document.querySelector("#auto-suggestions");
 display = document.querySelector("#display");
 
-searchBar.addEventListener('keyPress', checkKey);
+searchBar.addEventListener('keypress', checkKey);
 searchButton.addEventListener('click', processInput);
+searchBar.addEventListener('input', getAutoSuggestions)
 
 function checkKey(e) {
   var key = e.which || e.keyCode;
   if (key == 13) {
-    // console.log(“You pressed enter!”);
     processInput();
   }
 }
 
 function processInput() {
-  cleanedInput = searchBar.value.toLowerCase().trim();
+  let cleanedInput = searchBar.value.toLowerCase().trim();
   autoSuggestions.innerHTML = " ";
   autoSuggestions.style.display = "none";
-  searchBar = " ";
+  searchBar.value = " ";
+  console.log(cleanedInput);
 
   let databaseRecord = getRecord(cleanedInput);
 
   if (databaseRecord != null) {
     displayRecord(databaseRecord);
   } else {
-    alert("No results.");
+    displaySuggestions(getSuggestions(cleanedInput));
   }
 
 }
 
 function getRecord(cleanedInput) {
-  for (let i = 0; i <= database.lenght; i++) {
+  for (let i = 0; i < database.length; i++) {
     let cleanedRecordName = database[i].Breed.toLowerCase().trim();
-
+    console.log(cleanedRecordName);
     if (cleanedInput == cleanedRecordName) {
       return database[i];
     }
@@ -85,16 +86,16 @@ function getRecord(cleanedInput) {
   return null;
 }
 
-function displayRecord() {
-  let recordBreed = document.creatElement("h2"),
-    recordPicture = document.creatElement("img"),
-    recordBio = document.creatElement("p"),
-    recordHealth = document.creatElement("p"),
-    recordGromming = document.creatElement("p"),
-    recordTraining = document.creatElement("p");
+function displayRecord(databaseRecord) {
+  let recordBreed = document.createElement("h2"),
+    recordPicture = document.createElement("img"),
+    recordBio = document.createElement("p"),
+    recordHealth = document.createElement("p"),
+    recordGrooming = document.createElement("p"),
+    recordTraining = document.createElement("p");
 
   recordBreed.innerHTML = databaseRecord.Breed;
-  recordPicture.innerHTML = databaseRecord.Picture;
+  recordPicture.src = databaseRecord.Picture;
   recordBio.innerHTML = databaseRecord.Bio;
   recordHealth.innerHTML = databaseRecord.Health;
   recordGrooming.innerHTML = databaseRecord.Grooming;
@@ -104,8 +105,88 @@ function displayRecord() {
   display.appendChild(recordPicture);
   display.appendChild(recordBio);
   display.appendChild(recordHealth);
-  display.appendChild(recordGromming);
-  display.appendChild(recordGromming);
+  display.appendChild(recordGrooming);
+  display.appendChild(recordTraining);
 
 
+}
+
+function getAutoSuggestions() {
+  let cleanedInput = searchBar.value.toLowerCase().trim();
+  autoSuggestions.innerHTML= "";
+
+  for (let i = 0; i < database.length; i++) {
+    let cleanedRecordName = database[i].Breed.toLowerCase().trim();
+
+    if (cleanedRecordName.startsWith(cleanedInput) && cleanedInput.length > 0) {
+      let matching = cleanedRecordName.substring(0, searchBar.value.length),
+        remaining = cleanedRecordName.substring(searchBar.value.length),
+        result = matching + "<b>" + remaining + "<b>",
+        button = document.createElement("button");
+
+      button.innerHTML = result;
+      button.style.display = "block";
+      button.className = "suggestion";
+
+      activateSuggestionButton(button, database[i]);
+      autoSuggestions.appendChild(button);
+
+    }
+  }
+
+  if (autoSuggestions.hasChildNodes()) {
+
+    autoSuggestions.style.display = "block";
+
+  } else {
+    autoSuggestions.style.display = "none";
+  }
+}
+
+function activateSuggestionButton(button, record) {
+  button.addEventListener("click", function() {
+
+    displayRecord(record);
+    autoSuggestions.innerHTML = "";
+    autoSuggestions.style.display = "none";
+    searchBar.value = "";
+
+  });
+}
+
+function getSuggestion(cleanedInput) {
+  let suggestions = [];
+
+  for (let i = 0; i < database.length; i++) {
+    let cleanedRecordName = datbase[i].value.toLowerCase().trim();
+
+    if (cleanedRecordName.startsWith(cleanedInput) && cleanedInput > 0) {
+      suggestions.push(database[i]);
+    }
+  }
+
+  return suggestions;
+
+}
+
+function displaySuggestions(suggestions) {
+  display.innerHTML = "";
+  let paragraph = document.createElement("p");
+
+  if (suggestions > 0) {
+    paragraph.innerHTML = "Did you mean";
+    display.appendChild(paragraph);
+
+    for (let i = 0; i < suggestions.length; i++) {
+      let button = document.createElement("button");
+      button.innerHTML = suggests[i].Breed;
+      button.style.display = "block";
+      button.className = "suggestion";
+      activateSuggestionButton(button, suggestions[i]);
+      display.appendChild(button);
+    }
+  } else {
+    paragraph.innerHTML = "No results!"
+    display.appendChild(paragraph);
+  }
 }
